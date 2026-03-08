@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Church Finance Manager</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+</head>
+
+<body>
+
+<h1>Church Finance Manager</h1>
+
+<div class="menu">
+
+    <button onclick="dashboard()">Dashboard</button>
+    <button onclick="loadMembers()">Members</button>
+    <button onclick="loadBudget()">Budget</button>
+    <button onclick="loadIncome()">Income</button>
+    <button onclick="loadExpense()">Expense</button>
+    <button onclick="collectionReport()">Reports</button>
+
+</div>
+
+<div id="content"></div>
+
+<script src="firebase.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
