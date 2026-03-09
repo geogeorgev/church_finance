@@ -3,13 +3,21 @@ font-family:Arial;
 text-align:center;
 }
 
-button{
+button, input, select {
+width:100%;
+max-width:400px;
+margin:6px auto;
+display:block;
 padding:10px;
-margin:10px;
-font-size:16px;
 }
 
-input,select{
-margin:5px;
+table{
+width:100%;
+font-size:14px;
+border-collapse:collapse;
+}
+
+td,th{
 padding:6px;
+border:1px solid #ccc;
 }

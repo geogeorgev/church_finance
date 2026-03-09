@@ -1,222 +1,200 @@
-function showPage(page){
+```javascript
+// ---------------- DASHBOARD ----------------
 
-const content = document.getElementById("content");
+async function dashboard(){
 
-if(page === "members"){
-content.innerHTML = `
-<h2>Members</h2>
-<input placeholder="Member Name" id="memberName">
+let snap = await db.collection("budget").get()
+
+let html = "<h2>Budget Dashboard</h2>"
+html += "<table><tr><th>Category</th><th>SubCategory</th><th>Budget</th><th>Spent</th><th>Balance</th></tr>"
+
+snap.forEach(doc=>{
+let b = doc.data()
+
+html += `<tr>
+<td>${b.Category}</td>
+<td>${b.SubCategory}</td>
+<td>${b.BudgetAmount}</td>
+<td>${b.Spent || 0}</td>
+<td>${b.Balance || b.BudgetAmount}</td>
+</tr>`
+})
+
+html += "</table>"
+
+document.getElementById("content").innerHTML = html
+}
+
+
+
+// ---------------- MEMBERS ----------------
+
+async function loadMembers(){
+
+let html = `<h2>Members</h2>
+
+<h3>Add Member</h3>
+
+<input id="mname" placeholder="Name">
+<input id="mphone" placeholder="Phone">
+<input id="memail" placeholder="Email">
+
 <button onclick="addMember()">Add Member</button>
-<div id="memberList"></div>
-`;
-}
 
-if(page === "income"){
-content.innerHTML = `
-<h2>Income</h2>
+<h3>Member List</h3>
 
-<select id="incomeSource">
-<option>Cash</option>
-<option>Check</option>
-</select>
+<table id="memberTable">
+<tr>
+<th>Name</th>
+<th>Phone</th>
+<th>Email</th>
+<th>Total Contribution</th>
+</tr>
+`
 
-<input placeholder="Amount" id="incomeAmount">
+let snap = await db.collection("members").get()
 
-<button onclick="addIncome()">Add Income</button>
-`;
-}
-
-if(page === "expense"){
-content.innerHTML = `
-<h2>Expense</h2>
-
-<input placeholder="Member or Vendor Name" id="expenseName">
-
-<input placeholder="Amount" id="expenseAmount">
-
-<button onclick="addExpense()">Add Expense</button>
-`;
-}
-
-}
-
-function loadMembers(){
-
-document.getElementById("content").innerHTML = `
-
-<h2>Add Member</h2>
-
-<input id="name" placeholder="Name">
-<input id="address1" placeholder="Address1">
-<input id="phone" placeholder="Phone">
-<input id="email" placeholder="Email">
-
-<button onclick="addMember()">Save</button>
-
-`;
-}
-
-function addMember(){
-
-let name=document.getElementById("name").value;
-
-db.collection("members").add({
-
-Name:name,
-Address1:"",
-Address2:"",
-Address3:"",
-Phone:"",
-Email:"",
-TotalContribution:0
-
-});
-
-alert("Member added");
-
-}
-
-function loadBudget(){
-
-document.getElementById("content").innerHTML = `
-
-<h2>Add Budget</h2>
-
-<input id="category" placeholder="Category">
-<input id="subcategory" placeholder="SubCategory">
-<input id="amount" placeholder="Budget Amount">
-
-<button onclick="addBudget()">Save</button>
-
-`;
-}
-
-function addBudget(){
-
-db.collection("budget").add({
-
-Category:document.getElementById("category").value,
-SubCategory:document.getElementById("subcategory").value,
-BudgetAmount:Number(document.getElementById("amount").value),
-Spent:0,
-Balance:Number(document.getElementById("amount").value)
-
-});
-
-alert("Budget added");
-
-}
-
-function loadIncome(){
-
-document.getElementById("content").innerHTML = `
-
-<h2>Add Collection</h2>
-
-<select id="type">
-<option>Cash</option>
-<option>Check</option>
-</select>
-
-<input id="memberName" placeholder="Member Name">
-
-<input id="amount" placeholder="Amount">
-
-<input id="checkNumber" placeholder="Check Number">
-
-<button onclick="addIncome()">Save</button>
-
-`;
-}
-
-function addIncome(){
-
-let type=document.getElementById("type").value;
-
-db.collection("income").add({
-
-Type:type,
-CollectionDate:new Date(),
-MemberName:document.getElementById("memberName").value,
-CheckNumber:document.getElementById("checkNumber").value,
-CashTotal:type==="Cash"?Number(document.getElementById("amount").value):0,
-CheckAmount:type==="Check"?Number(document.getElementById("amount").value):0
-
-});
-
-alert("Income saved");
-
-}
-
-function loadExpense(){
-
-document.getElementById("content").innerHTML = `
-
-<h2>Add Expense</h2>
-
-<input id="payee" placeholder="Payee Name">
-
-<select id="isMember">
-<option>No</option>
-<option>Yes</option>
-</select>
-
-<input id="category" placeholder="Category">
-<input id="subcategory" placeholder="SubCategory">
-
-<input id="amount" placeholder="Amount">
-
-<button onclick="addExpense()">Save</button>
-
-`;
-}
-
-function addExpense(){
-
-db.collection("expense").add({
-
-PaymentDate:new Date(),
-PayeeName:document.getElementById("payee").value,
-IsMember:document.getElementById("isMember").value,
-Category:document.getElementById("category").value,
-SubCategory:document.getElementById("subcategory").value,
-Amount:Number(document.getElementById("amount").value)
-
-});
-
-alert("Expense saved");
-
-}
-
-async function loadMemberDropdown(){
-
-let snapshot = await db.collection("members").get()
-
-let html = `<select id="memberSelect">`
-
-snapshot.forEach(doc => {
-
+snap.forEach(doc=>{
 let m = doc.data()
 
-html += `<option value="${doc.id}">
-${m.Name}
-</option>`
+html += `<tr>
+<td>${m.Name}</td>
+<td>${m.Phone || ""}</td>
+<td>${m.Email || ""}</td>
+<td>${m.TotalContribution || 0}</td>
+</tr>`
+})
+
+html += "</table>"
+
+document.getElementById("content").innerHTML = html
+}
+
+
+
+async function addMember(){
+
+let name = document.getElementById("mname").value
+let phone = document.getElementById("mphone").value
+let email = document.getElementById("memail").value
+
+await db.collection("members").add({
+
+Name:name,
+Phone:phone,
+Email:email,
+TotalContribution:0
 
 })
 
-html += `</select>`
+alert("Member added")
 
-return html
+loadMembers()
 
 }
 
+
+
+// ---------------- MEMBER DROPDOWN ----------------
+
+async function memberDropdown(){
+
+let snap = await db.collection("members").get()
+
+let html = `<select id="memberSelect">`
+
+snap.forEach(doc=>{
+let m = doc.data()
+html += `<option value="${doc.id}">${m.Name}</option>`
+})
+
+html += "</select>"
+
+return html
+}
+
+
+
+// ---------------- BUDGET ----------------
+
+async function loadBudget(){
+
+let html = `<h2>Budget</h2>
+
+<h3>Add Budget</h3>
+
+<input id="cat" placeholder="Category">
+<input id="subcat" placeholder="SubCategory">
+<input id="amount" placeholder="Budget Amount">
+
+<button onclick="addBudget()">Add Budget</button>
+
+<h3>Budget List</h3>
+
+<table>
+<tr>
+<th>Category</th>
+<th>SubCategory</th>
+<th>Budget</th>
+<th>Spent</th>
+<th>Balance</th>
+</tr>
+`
+
+let snap = await db.collection("budget").get()
+
+snap.forEach(doc=>{
+let b = doc.data()
+
+html += `<tr>
+<td>${b.Category}</td>
+<td>${b.SubCategory}</td>
+<td>${b.BudgetAmount}</td>
+<td>${b.Spent || 0}</td>
+<td>${b.Balance || b.BudgetAmount}</td>
+</tr>`
+})
+
+html += "</table>"
+
+document.getElementById("content").innerHTML = html
+}
+
+
+
+async function addBudget(){
+
+let cat = document.getElementById("cat").value
+let sub = document.getElementById("subcat").value
+let amount = Number(document.getElementById("amount").value)
+
+await db.collection("budget").add({
+
+Category:cat,
+SubCategory:sub,
+BudgetAmount:amount,
+Spent:0,
+Balance:amount
+
+})
+
+alert("Budget added")
+
+loadBudget()
+
+}
+
+
+
+// ---------------- INCOME ----------------
+
 async function loadIncome(){
 
-let memberDropdown = await loadMemberDropdown()
+let members = await memberDropdown()
 
 document.getElementById("content").innerHTML = `
 
-<h2>Record Collection</h2>
+<h2>Collection Entry</h2>
 
 Type
 <select id="type">
@@ -225,7 +203,7 @@ Type
 </select>
 
 Member
-${memberDropdown}
+${members}
 
 Purpose
 <input id="purpose">
@@ -240,188 +218,203 @@ Check Number
 
 `
 }
+
+
+
 async function addIncome(){
 
 let memberId = document.getElementById("memberSelect").value
 let amount = Number(document.getElementById("amount").value)
 
-let date = new Date()
+let memberDoc = await db.collection("members").doc(memberId).get()
+
+let memberName = memberDoc.data().Name
 
 await db.collection("income").add({
 
 MemberID:memberId,
+MemberName:memberName,
+Amount:amount,
 Type:document.getElementById("type").value,
 Purpose:document.getElementById("purpose").value,
 CheckNumber:document.getElementById("check").value,
-Amount:amount,
-Month:date.getMonth()+1,
-Year:date.getFullYear(),
-CollectionDate:date
+Date:new Date()
 
 })
 
-let memberRef = db.collection("members").doc(memberId)
+let total = memberDoc.data().TotalContribution || 0
 
-let memberDoc = await memberRef.get()
+db.collection("members").doc(memberId).update({
 
-let current = memberDoc.data().TotalContribution || 0
+TotalContribution: total + amount
 
-memberRef.update({
-TotalContribution: current + amount
 })
 
-alert("Income Recorded")
+alert("Collection saved")
 
 }
-async function loadBudgetDropdown(){
 
-let snapshot = await db.collection("budget").get()
 
-let html=`<select id="budgetSelect">`
 
-snapshot.forEach(doc =>{
+// ---------------- EXPENSE ----------------
 
-let b=doc.data()
-
-html+=`<option value="${doc.id}">
-${b.Category} - ${b.SubCategory}
-</option>`
-
-})
-
-html+=`</select>`
-
-return html
-
-}
 async function loadExpense(){
 
-let members = await loadMemberDropdown()
-let budgets = await loadBudgetDropdown()
+let snap = await db.collection("budget").get()
+
+let budgetSelect = `<select id="budgetSelect">`
+
+snap.forEach(doc=>{
+let b = doc.data()
+budgetSelect += `<option value="${doc.id}">
+${b.Category} - ${b.SubCategory}
+</option>`
+})
+
+budgetSelect += "</select>"
 
 document.getElementById("content").innerHTML = `
 
-<h2>Record Expense</h2>
+<h2>Expense Entry</h2>
 
 Payee
 <input id="payee">
 
-Is Member
-<select id="isMember">
-<option>No</option>
-<option>Yes</option>
-</select>
-
-Member
-${members}
+Purpose
+<input id="purpose">
 
 Budget
-${budgets}
+${budgetSelect}
 
 Amount
 <input id="amount">
-
-Purpose
-<input id="purpose">
 
 <button onclick="addExpense()">Save</button>
 
 `
 }
+
+
+
 async function addExpense(){
 
-let budgetId=document.getElementById("budgetSelect").value
-let amount=Number(document.getElementById("amount").value)
-
-let date=new Date()
+let budgetId = document.getElementById("budgetSelect").value
+let amount = Number(document.getElementById("amount").value)
 
 await db.collection("expense").add({
 
 BudgetID:budgetId,
 Amount:amount,
 Purpose:document.getElementById("purpose").value,
-PaymentDate:date,
-Month:date.getMonth()+1,
-Year:date.getFullYear()
+Date:new Date()
 
 })
 
-let budgetRef=db.collection("budget").doc(budgetId)
+let ref = db.collection("budget").doc(budgetId)
 
-let doc=await budgetRef.get()
+let doc = await ref.get()
 
-let spent=doc.data().Spent || 0
-let budgetAmount=doc.data().BudgetAmount
+let spent = doc.data().Spent || 0
+let total = doc.data().BudgetAmount
 
-let newSpent=spent+amount
+let newSpent = spent + amount
 
-budgetRef.update({
+ref.update({
 
 Spent:newSpent,
-Balance:budgetAmount-newSpent
+Balance: total - newSpent
 
 })
 
-alert("Expense Saved")
+alert("Expense saved")
 
 }
+
+
+
+// ---------------- REPORTS ----------------
+
+function loadReports(){
+
+document.getElementById("content").innerHTML = `
+
+<h2>Reports</h2>
+
+<button onclick="collectionReport('month')">Monthly Collections</button>
+
+<button onclick="collectionReport('quarter')">Quarterly Collections</button>
+
+<button onclick="collectionReport('ytd')">Year To Date Collections</button>
+
+<br><br>
+
+<button onclick="expenseReport('month')">Monthly Expenses</button>
+
+<button onclick="expenseReport('quarter')">Quarterly Expenses</button>
+
+<button onclick="expenseReport('ytd')">Year To Date Expenses</button>
+
+`
+}
+
+
+
 async function collectionReport(){
 
-let snapshot = await db.collection("income").get()
+let snap = await db.collection("income").get()
 
-let total=0
-let html="<h2>Collection Report</h2><table border=1>"
+let total = 0
 
-snapshot.forEach(doc=>{
+let html = "<h2>Collection Report</h2>"
+html += "<table><tr><th>Member</th><th>Purpose</th><th>Amount</th></tr>"
 
-let d=doc.data()
+snap.forEach(doc=>{
 
-total+=d.Amount
+let d = doc.data()
 
-html+=`<tr>
+total += d.Amount
+
+html += `<tr>
 <td>${d.MemberName}</td>
-<td>${d.Amount}</td>
 <td>${d.Purpose}</td>
+<td>${d.Amount}</td>
 </tr>`
 
 })
 
-html+=`</table><h3>Total: ${total}</h3>`
+html += `</table><h3>Total ${total}</h3>`
 
-document.getElementById("content").innerHTML=html
-
-}
-async function dashboard(){
-
-let month=new Date().getMonth()+1
-let year=new Date().getFullYear()
-
-let incomeSnap=await db.collection("income")
-.where("Month","==",month)
-.where("Year","==",year)
-.get()
-
-let expenseSnap=await db.collection("expense")
-.where("Month","==",month)
-.where("Year","==",year)
-.get()
-
-let incomeTotal=0
-let expenseTotal=0
-
-incomeSnap.forEach(d=>incomeTotal+=d.data().Amount)
-expenseSnap.forEach(d=>expenseTotal+=d.data().Amount)
-
-document.getElementById("content").innerHTML=`
-
-<h2>Monthly Dashboard</h2>
-
-Total Income: ${incomeTotal} <br><br>
-
-Total Expense: ${expenseTotal} <br><br>
-
-Balance: ${incomeTotal-expenseTotal}
-
-`
+document.getElementById("content").innerHTML = html
 
 }
+
+
+
+async function expenseReport(){
+
+let snap = await db.collection("expense").get()
+
+let total = 0
+
+let html = "<h2>Expense Report</h2>"
+html += "<table><tr><th>Purpose</th><th>Amount</th></tr>"
+
+snap.forEach(doc=>{
+
+let d = doc.data()
+
+total += d.Amount
+
+html += `<tr>
+<td>${d.Purpose}</td>
+<td>${d.Amount}</td>
+</tr>`
+
+})
+
+html += `</table><h3>Total ${total}</h3>`
+
+document.getElementById("content").innerHTML = html
+
+}
+```
