@@ -39,6 +39,9 @@ html += `
 <h3>Add Member</h3>
 
 <input id="mname" placeholder="Name">
+<input id="madd1" placeholder="Address1">
+<input id="madd2" placeholder="Address2">
+<input id="madd3" placeholder="Address3">
 <input id="mphone" placeholder="Phone">
 <input id="memail" placeholder="Email">
 
@@ -78,12 +81,18 @@ document.getElementById("content").innerHTML = html
 async function addMember(){
 
 const name = document.getElementById("mname").value
+const address1 = document.getElementById("madd1").value
+const address2 = document.getElementById("madd2").value
+const address3 = document.getElementById("madd3").value
 const phone = document.getElementById("mphone").value
 const email = document.getElementById("memail").value
 
 await db.collection("members").add({
 
 Name:name,
+Address1:address1,
+Address2:address2,
+Address3:address3,
 Phone:phone,
 Email:email,
 TotalContribution:0
