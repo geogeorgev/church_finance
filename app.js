@@ -1,4 +1,3 @@
-```javascript
 // ---------------- DASHBOARD ----------------
 
 async function dashboard(){
