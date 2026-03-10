@@ -92,7 +92,7 @@ let html = `<h2>Members</h2>
 <th>Email</th>
 <th>Total Contribution</th>
 </tr>
-`
+
 
 let snap = await db.collection("members").get()
 
@@ -181,7 +181,6 @@ let html = `<h2>Budget</h2>
 <th>Spent</th>
 <th>Balance</th>
 </tr>
-`
 
 let snap = await db.collection("budget").get()
 
@@ -258,7 +257,6 @@ Check Number
 
 <button onclick="addIncome()">Save</button>
 
-`
 }
 
 
@@ -333,7 +331,6 @@ Amount
 
 <button onclick="addExpense()">Save</button>
 
-`
 }
 
 
@@ -396,7 +393,6 @@ document.getElementById("content").innerHTML = `
 
 <button onclick="expenseReport('ytd')">Year To Date Expenses</button>
 
-`
 }
 
 
@@ -459,4 +455,3 @@ html += `</table><h3>Total ${total}</h3>`
 document.getElementById("content").innerHTML = html
 
 }
-```
