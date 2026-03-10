@@ -1,4 +1,3 @@
-```javascript
 console.log("app.js loaded")
 
 // DASHBOARD
