@@ -33,9 +33,9 @@ document.getElementById("content").innerHTML = html
 // MEMBERS
 async function loadMembers(){
 
-let html = `
-<h2>Members</h2>
+let html = "<h2>Members</h2>"
 
+html += `
 <h3>Add Member</h3>
 
 <input id="mname" placeholder="Name">
@@ -43,31 +43,33 @@ let html = `
 <input id="memail" placeholder="Email">
 
 <button onclick="addMember()">Add Member</button>
-
-<h3>Member List</h3>
 `
 
-const snap = await db.collection("members").get()
+let snap = await db.collection("members").get()
 
-snap.forEach(doc => {
+snap.forEach(doc=>{
 
-const m = doc.data()
+let m = doc.data()
 
 html += `
 <div class="card">
 
-<b>${m.Name}</b><br>
-Phone: ${m.Phone || ""}<br>
-Email: ${m.Email || ""}<br>
-Total Contribution: $${m.TotalContribution || 0}
+<div class="card-title">${m.Name}</div>
+
+<div class="card-row">Phone: ${m.Phone || ""}</div>
+
+<div class="card-row">Email: ${m.Email || ""}</div>
+
+<div class="card-row">Total Contribution: $${m.TotalContribution || 0}</div>
 
 </div>
 `
+
 })
 
 document.getElementById("content").innerHTML = html
-}
 
+}
 
 
 async function addMember(){
