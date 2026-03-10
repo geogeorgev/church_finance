@@ -1,79 +1,41 @@
+```javascript
 console.log("app.js loaded")
-function showPage(page){
 
-const content = document.getElementById("content");
-
-if(page === "members"){
-content.innerHTML = `
-<h2>Members</h2>
-<input placeholder="Member Name" id="memberName">
-<button onclick="addMember()">Add Member</button>
-<div id="memberList"></div>
-`;
-}
-
-if(page === "income"){
-content.innerHTML = `
-<h2>Income</h2>
-
-<select id="incomeSource">
-<option>Cash</option>
-<option>Check</option>
-</select>
-
-<input placeholder="Amount" id="incomeAmount">
-
-<button onclick="addIncome()">Add Income</button>
-`;
-}
-
-if(page === "expense"){
-content.innerHTML = `
-<h2>Expense</h2>
-
-<input placeholder="Member or Vendor Name" id="expenseName">
-
-<input placeholder="Amount" id="expenseAmount">
-
-<button onclick="addExpense()">Add Expense</button>
-`;
-}
-
-}
-
-// ---------------- DASHBOARD ----------------
-
+// DASHBOARD
 async function dashboard(){
 
-let snap = await db.collection("budget").get()
+const snap = await db.collection("budget").get()
 
 let html = "<h2>Budget Dashboard</h2>"
-html += "<table><tr><th>Category</th><th>SubCategory</th><th>Budget</th><th>Spent</th><th>Balance</th></tr>"
 
-snap.forEach(doc=>{
-let b = doc.data()
+snap.forEach(doc => {
 
-html += `<tr>
-<td>${b.Category}</td>
-<td>${b.SubCategory}</td>
-<td>${b.BudgetAmount}</td>
-<td>${b.Spent || 0}</td>
-<td>${b.Balance || b.BudgetAmount}</td>
-</tr>`
+const b = doc.data()
+
+html += `
+<div class="card">
+
+<b>${b.Category}</b><br>
+SubCategory: ${b.SubCategory}<br>
+Budget: $${b.BudgetAmount}<br>
+Spent: $${b.Spent || 0}<br>
+Balance: $${b.Balance || b.BudgetAmount}
+
+</div>
+`
 })
 
-html += "</table>"
-
 document.getElementById("content").innerHTML = html
+
 }
 
 
 
-// ---------------- MEMBERS ----------------
-
+// MEMBERS
 async function loadMembers(){
 
-let html = `<h2>Members</h2>
+let html = `
+<h2>Members</h2>
 
 <h3>Add Member</h3>
 
@@ -84,30 +46,25 @@ let html = `<h2>Members</h2>
 <button onclick="addMember()">Add Member</button>
 
 <h3>Member List</h3>
+`
 
-<table id="memberTable">
-<tr>
-<th>Name</th>
-<th>Phone</th>
-<th>Email</th>
-<th>Total Contribution</th>
-</tr>
+const snap = await db.collection("members").get()
 
+snap.forEach(doc => {
 
-let snap = await db.collection("members").get()
+const m = doc.data()
 
-snap.forEach(doc=>{
-let m = doc.data()
+html += `
+<div class="card">
 
-html += `<tr>
-<td>${m.Name}</td>
-<td>${m.Phone || ""}</td>
-<td>${m.Email || ""}</td>
-<td>${m.TotalContribution || 0}</td>
-</tr>`
+<b>${m.Name}</b><br>
+Phone: ${m.Phone || ""}<br>
+Email: ${m.Email || ""}<br>
+Total Contribution: $${m.TotalContribution || 0}
+
+</div>
+`
 })
-
-html += "</table>"
 
 document.getElementById("content").innerHTML = html
 }
@@ -116,9 +73,9 @@ document.getElementById("content").innerHTML = html
 
 async function addMember(){
 
-let name = document.getElementById("mname").value
-let phone = document.getElementById("mphone").value
-let email = document.getElementById("memail").value
+const name = document.getElementById("mname").value
+const phone = document.getElementById("mphone").value
+const email = document.getElementById("memail").value
 
 await db.collection("members").add({
 
@@ -137,31 +94,33 @@ loadMembers()
 
 
 
-// ---------------- MEMBER DROPDOWN ----------------
-
+// MEMBER DROPDOWN
 async function memberDropdown(){
 
-let snap = await db.collection("members").get()
+const snap = await db.collection("members").get()
 
 let html = `<select id="memberSelect">`
 
-snap.forEach(doc=>{
-let m = doc.data()
+snap.forEach(doc => {
+
+const m = doc.data()
+
 html += `<option value="${doc.id}">${m.Name}</option>`
+
 })
 
-html += "</select>"
+html += `</select>`
 
 return html
 }
 
 
 
-// ---------------- BUDGET ----------------
-
+// BUDGET
 async function loadBudget(){
 
-let html = `<h2>Budget</h2>
+let html = `
+<h2>Budget</h2>
 
 <h3>Add Budget</h3>
 
@@ -172,31 +131,26 @@ let html = `<h2>Budget</h2>
 <button onclick="addBudget()">Add Budget</button>
 
 <h3>Budget List</h3>
+`
 
-<table>
-<tr>
-<th>Category</th>
-<th>SubCategory</th>
-<th>Budget</th>
-<th>Spent</th>
-<th>Balance</th>
-</tr>
+const snap = await db.collection("budget").get()
 
-let snap = await db.collection("budget").get()
+snap.forEach(doc => {
 
-snap.forEach(doc=>{
-let b = doc.data()
+const b = doc.data()
 
-html += `<tr>
-<td>${b.Category}</td>
-<td>${b.SubCategory}</td>
-<td>${b.BudgetAmount}</td>
-<td>${b.Spent || 0}</td>
-<td>${b.Balance || b.BudgetAmount}</td>
-</tr>`
+html += `
+<div class="card">
+
+<b>${b.Category}</b><br>
+SubCategory: ${b.SubCategory}<br>
+Budget: $${b.BudgetAmount}<br>
+Spent: $${b.Spent || 0}<br>
+Balance: $${b.Balance || b.BudgetAmount}
+
+</div>
+`
 })
-
-html += "</table>"
 
 document.getElementById("content").innerHTML = html
 }
@@ -205,9 +159,9 @@ document.getElementById("content").innerHTML = html
 
 async function addBudget(){
 
-let cat = document.getElementById("cat").value
-let sub = document.getElementById("subcat").value
-let amount = Number(document.getElementById("amount").value)
+const cat = document.getElementById("cat").value
+const sub = document.getElementById("subcat").value
+const amount = Number(document.getElementById("amount").value)
 
 await db.collection("budget").add({
 
@@ -227,11 +181,10 @@ loadBudget()
 
 
 
-// ---------------- INCOME ----------------
-
+// INCOME
 async function loadIncome(){
 
-let members = await memberDropdown()
+const members = await memberDropdown()
 
 document.getElementById("content").innerHTML = `
 
@@ -257,18 +210,19 @@ Check Number
 
 <button onclick="addIncome()">Save</button>
 
+`
 }
 
 
 
 async function addIncome(){
 
-let memberId = document.getElementById("memberSelect").value
-let amount = Number(document.getElementById("amount").value)
+const memberId = document.getElementById("memberSelect").value
+const amount = Number(document.getElementById("amount").value)
 
-let memberDoc = await db.collection("members").doc(memberId).get()
+const memberDoc = await db.collection("members").doc(memberId).get()
 
-let memberName = memberDoc.data().Name
+const memberName = memberDoc.data().Name
 
 await db.collection("income").add({
 
@@ -282,9 +236,9 @@ Date:new Date()
 
 })
 
-let total = memberDoc.data().TotalContribution || 0
+const total = memberDoc.data().TotalContribution || 0
 
-db.collection("members").doc(memberId).update({
+await db.collection("members").doc(memberId).update({
 
 TotalContribution: total + amount
 
@@ -296,19 +250,21 @@ alert("Collection saved")
 
 
 
-// ---------------- EXPENSE ----------------
-
+// EXPENSE
 async function loadExpense(){
 
-let snap = await db.collection("budget").get()
+const snap = await db.collection("budget").get()
 
 let budgetSelect = `<select id="budgetSelect">`
 
-snap.forEach(doc=>{
-let b = doc.data()
+snap.forEach(doc => {
+
+const b = doc.data()
+
 budgetSelect += `<option value="${doc.id}">
 ${b.Category} - ${b.SubCategory}
 </option>`
+
 })
 
 budgetSelect += "</select>"
@@ -331,14 +287,15 @@ Amount
 
 <button onclick="addExpense()">Save</button>
 
+`
 }
 
 
 
 async function addExpense(){
 
-let budgetId = document.getElementById("budgetSelect").value
-let amount = Number(document.getElementById("amount").value)
+const budgetId = document.getElementById("budgetSelect").value
+const amount = Number(document.getElementById("amount").value)
 
 await db.collection("expense").add({
 
@@ -349,16 +306,16 @@ Date:new Date()
 
 })
 
-let ref = db.collection("budget").doc(budgetId)
+const ref = db.collection("budget").doc(budgetId)
 
-let doc = await ref.get()
+const doc = await ref.get()
 
-let spent = doc.data().Spent || 0
-let total = doc.data().BudgetAmount
+const spent = doc.data().Spent || 0
+const total = doc.data().BudgetAmount
 
-let newSpent = spent + amount
+const newSpent = spent + amount
 
-ref.update({
+await ref.update({
 
 Spent:newSpent,
 Balance: total - newSpent
@@ -371,56 +328,49 @@ alert("Expense saved")
 
 
 
-// ---------------- REPORTS ----------------
-
+// REPORT MENU
 function loadReports(){
 
 document.getElementById("content").innerHTML = `
 
 <h2>Reports</h2>
 
-<button onclick="collectionReport('month')">Monthly Collections</button>
+<button onclick="collectionReport()">Collection Report</button>
 
-<button onclick="collectionReport('quarter')">Quarterly Collections</button>
+<button onclick="expenseReport()">Expense Report</button>
 
-<button onclick="collectionReport('ytd')">Year To Date Collections</button>
-
-<br><br>
-
-<button onclick="expenseReport('month')">Monthly Expenses</button>
-
-<button onclick="expenseReport('quarter')">Quarterly Expenses</button>
-
-<button onclick="expenseReport('ytd')">Year To Date Expenses</button>
-
+`
 }
 
 
 
+// COLLECTION REPORT
 async function collectionReport(){
 
-let snap = await db.collection("income").get()
+const snap = await db.collection("income").get()
 
 let total = 0
 
 let html = "<h2>Collection Report</h2>"
-html += "<table><tr><th>Member</th><th>Purpose</th><th>Amount</th></tr>"
 
-snap.forEach(doc=>{
+snap.forEach(doc => {
 
-let d = doc.data()
+const d = doc.data()
 
 total += d.Amount
 
-html += `<tr>
-<td>${d.MemberName}</td>
-<td>${d.Purpose}</td>
-<td>${d.Amount}</td>
-</tr>`
+html += `
+<div class="card">
 
+Member: ${d.MemberName}<br>
+Purpose: ${d.Purpose}<br>
+Amount: $${d.Amount}
+
+</div>
+`
 })
 
-html += `</table><h3>Total ${total}</h3>`
+html += `<h3>Total: $${total}</h3>`
 
 document.getElementById("content").innerHTML = html
 
@@ -428,29 +378,32 @@ document.getElementById("content").innerHTML = html
 
 
 
+// EXPENSE REPORT
 async function expenseReport(){
 
-let snap = await db.collection("expense").get()
+const snap = await db.collection("expense").get()
 
 let total = 0
 
 let html = "<h2>Expense Report</h2>"
-html += "<table><tr><th>Purpose</th><th>Amount</th></tr>"
 
-snap.forEach(doc=>{
+snap.forEach(doc => {
 
-let d = doc.data()
+const d = doc.data()
 
 total += d.Amount
 
-html += `<tr>
-<td>${d.Purpose}</td>
-<td>${d.Amount}</td>
-</tr>`
+html += `
+<div class="card">
 
+Purpose: ${d.Purpose}<br>
+Amount: $${d.Amount}
+
+</div>
+`
 })
 
-html += `</table><h3>Total ${total}</h3>`
+html += `<h3>Total: $${total}</h3>`
 
 document.getElementById("content").innerHTML = html
 
