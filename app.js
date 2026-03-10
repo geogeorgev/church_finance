@@ -1,3 +1,4 @@
+console.log("app.js loaded")
 function showPage(page){
 
 const content = document.getElementById("content");
