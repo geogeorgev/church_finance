@@ -43,6 +43,9 @@ html += `
 <input id="memail" placeholder="Email">
 
 <button onclick="addMember()">Add Member</button>
+
+<h3>Member List</h3>
+
 `
 
 let snap = await db.collection("members").get()
