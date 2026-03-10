@@ -87,7 +87,7 @@ const address3 = document.getElementById("madd3").value
 const phone = document.getElementById("mphone").value
 const email = document.getElementById("memail").value
 
-await db.collection("members").add({
+/*await db.collection("members").add({
 
 Name:name,
 Address1:address1,
@@ -97,7 +97,21 @@ Phone:phone,
 Email:email,
 TotalContribution:0
 
+}) */
+
+const ref = db.collection("members").doc()
+await ref.set({
+MemberID: ref.id,
+Name:name,
+Address1:address1,
+Address2:address2,
+Address3:address3,
+Phone:phone,
+Email:email,
+TotalContribution:0
+
 })
+
 
 alert("Member added")
 
@@ -118,7 +132,9 @@ snap.forEach(doc => {
 
 const m = doc.data()
 
-html += `<option value="${doc.id}">${m.Name}</option>`
+html += `<option value="${m.MemberID}">
+${m.MemberID} - ${m.Name}
+</option>`
 
 })
 
@@ -263,6 +279,83 @@ alert("Collection saved")
 
 
 
+/*// EXPENSE
+async function loadExpense(){
+
+const snap = await db.collection("budget").get()
+
+let budgetSelect = `<select id="budgetSelect">`
+
+snap.forEach(doc => {
+
+const b = doc.data()
+
+budgetSelect += `<option value="${doc.id}">
+${b.Category} - ${b.SubCategory}
+</option>`
+
+})
+
+budgetSelect += "</select>"
+
+document.getElementById("content").innerHTML = `
+
+<h2>Expense Entry</h2>
+
+Payee
+<input id="payee">
+
+Purpose
+<input id="purpose">
+
+Budget
+${budgetSelect}
+
+Amount
+<input id="amount">
+
+<button onclick="addExpense()">Save</button>
+
+`
+}
+
+
+
+async function addExpense(){
+
+const budgetId = document.getElementById("budgetSelect").value
+const amount = Number(document.getElementById("amount").value)
+
+await db.collection("expense").add({
+
+BudgetID:budgetId,
+Amount:amount,
+Purpose:document.getElementById("purpose").value,
+Date:new Date()
+
+})
+
+const ref = db.collection("budget").doc(budgetId)
+
+const doc = await ref.get()
+
+const spent = doc.data().Spent || 0
+const total = doc.data().BudgetAmount
+
+const newSpent = spent + amount
+
+await ref.update({
+
+Spent:newSpent,
+Balance: total - newSpent
+
+})
+
+alert("Expense saved")
+
+}
+*/
+
 // EXPENSE
 async function loadExpense(){
 
@@ -301,6 +394,37 @@ Amount
 <button onclick="addExpense()">Save</button>
 
 `
+//added
+const members = await memberDropdown()
+
+document.getElementById("content").innerHTML = `
+
+<h2>Expense Entry</h2>
+
+Payee Type
+<select id="payeeType" onchange="togglePayee()">
+<option value="member">Member</option>
+<option value="other">Other</option>
+</select>
+
+<div id="memberPayee">
+${members}
+</div>
+
+<div id="otherPayee" style="display:none">
+<input id="payeeName" placeholder="Contractor/Plumber Name">
+</div>
+
+Purpose
+<input id="purpose">
+
+Amount
+<input id="amount">
+
+<button onclick="addExpense()">Save</button>
+`
+
+
 }
 
 
@@ -389,7 +513,16 @@ document.getElementById("content").innerHTML = html
 
 }
 
+function togglePayee(){
 
+const type = document.getElementById("payeeType").value
+
+document.getElementById("memberPayee").style.display =
+type==="member" ? "block" : "none"
+
+document.getElementById("otherPayee").style.display =
+type==="other" ? "block" : "none"
+}
 
 // EXPENSE REPORT
 async function expenseReport(){
@@ -420,4 +553,137 @@ html += `<h3>Total: $${total}</h3>`
 
 document.getElementById("content").innerHTML = html
 
+}
+
+
+//Dashboard chart:
+async function loadFinanceChart(){
+
+const incomeSnap = await db.collection("income").get()
+const expenseSnap = await db.collection("expense").get()
+
+let incomeTotal = 0
+let expenseTotal = 0
+
+incomeSnap.forEach(doc=>{
+incomeTotal += doc.data().Amount
+})
+
+expenseSnap.forEach(doc=>{
+expenseTotal += doc.data().Amount
+})
+
+document.getElementById("content").innerHTML = `
+<h2>Finance Dashboard</h2>
+
+<canvas id="financeChart"></canvas>
+`
+
+const ctx = document.getElementById("financeChart")
+
+new Chart(ctx,{
+type:"bar",
+data:{
+labels:["Income","Expense"],
+datasets:[{
+label:"Church Finance",
+data:[incomeTotal,expenseTotal],
+backgroundColor:["green","red"]
+}]
+}
+})
+}
+
+//This shows total contribution by each person.
+async function memberContributionReport(){
+
+const snap = await db.collection("income").get()
+
+let totals = {}
+
+snap.forEach(doc=>{
+
+const d = doc.data()
+
+if(!totals[d.MemberID]){
+totals[d.MemberID] = {
+name:d.MemberName,
+total:0
+}
+}
+
+totals[d.MemberID].total += d.Amount
+})
+
+let html = "<h2>Member Contributions</h2>"
+
+Object.keys(totals).forEach(id=>{
+
+html += `
+<div class="card">
+
+${totals[id].name}<br>
+Total Contribution: $${totals[id].total}
+
+</div>
+`
+})
+
+document.getElementById("content").innerHTML = html
+}
+
+//5. Export Reports to Excel
+
+async function exportCollectionsExcel(){
+
+const snap = await db.collection("income").get()
+
+let rows = []
+
+snap.forEach(doc=>{
+rows.push(doc.data())
+})
+
+const worksheet = XLSX.utils.json_to_sheet(rows)
+
+const workbook = XLSX.utils.book_new()
+
+XLSX.utils.book_append_sheet(workbook,worksheet,"Collections")
+
+XLSX.writeFile(workbook,"church_collections.xlsx")
+}
+
+//6. Generate Contribution PDF (Member Statement)
+
+async function generateMemberPDF(memberId){
+
+const { jsPDF } = window.jspdf
+
+const snap = await db.collection("income")
+.where("MemberID","==",memberId)
+.get()
+
+let total = 0
+
+const doc = new jsPDF()
+
+doc.text("Church Contribution Statement",20,20)
+
+let y = 40
+
+snap.forEach(d=>{
+
+const data = d.data()
+
+doc.text(`${data.Purpose}  $${data.Amount}`,20,y)
+
+y += 10
+
+total += data.Amount
+
+})
+
+doc.text("Total Contribution: $" + total,20,y+10)
+
+doc.save("member_statement.pdf")
 }
