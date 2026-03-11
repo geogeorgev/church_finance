@@ -653,7 +653,67 @@ XLSX.utils.book_append_sheet(workbook,worksheet,"Collections")
 XLSX.writeFile(workbook,"church_collections.xlsx")
 }
 
-//6. Generate Contribution PDF (Member Statement)
+//6. Generate Tax Report - All Members Summary
+async function generateTaxReport(){
+
+const { jsPDF } = window.jspdf
+
+const snap = await db.collection("income").get()
+
+let totals = {}
+let grandTotal = 0
+
+snap.forEach(doc=>{
+
+const d = doc.data()
+
+if(!totals[d.MemberID]){
+totals[d.MemberID] = {
+name:d.MemberName,
+total:0
+}
+}
+
+totals[d.MemberID].total += d.Amount
+grandTotal += d.Amount
+})
+
+const doc = new jsPDF()
+
+doc.setFontSize(16)
+doc.text("Church Tax Contribution Report",20,20)
+
+doc.setFontSize(10)
+doc.text(`Generated: ${new Date().toLocaleDateString()}`,20,30)
+
+let y = 45
+
+doc.setFontSize(12)
+doc.text("Member Contributions:",20,y)
+y += 10
+
+Object.keys(totals).forEach(id=>{
+
+doc.setFontSize(10)
+doc.text(`${totals[id].name}: $${totals[id].total.toFixed(2)}`,25,y)
+y += 8
+
+if(y > 270){
+doc.addPage()
+y = 20
+}
+})
+
+y += 5
+doc.setFontSize(12)
+doc.text(`Total Contributions: $${grandTotal.toFixed(2)}`,20,y)
+
+doc.save("church_tax_report.pdf")
+
+alert("Tax report generated successfully!")
+}
+
+//7. Generate Individual Member PDF (Member Statement)
 
 async function generateMemberPDF(memberId){
 
