@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Function Check</title>
+</head>
+<body>
+
+<h1>Function Availability Check</h1>
+<p>Open browser console (F12) to see results</p>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="firebase.js"></script>
+<script src="utils.js"></script>
+<script src="app.js"></script>
+<script>
+  console.log("=== FUNCTION CHECK RESULTS ===")
+  console.log("dashboard:", typeof dashboard)
+  console.log("loadMembers:", typeof loadMembers)
+  console.log("loadBudget:", typeof loadBudget)
+  console.log("loadIncome:", typeof loadIncome)
+  console.log("loadExpense:", typeof loadExpense)
+  console.log("loadReports:", typeof loadReports)
+  console.log("exportCollectionsExcel:", typeof exportCollectionsExcel)
+  console.log("showTaxReportOptions:", typeof showTaxReportOptions)
+  console.log("=============================")
+
+  if (typeof dashboard === 'function' && typeof loadMembers === 'function') {
+    document.body.innerHTML += "<h2 style='color:green'>✅ All functions are available!</h2>"
+  } else {
+    document.body.innerHTML += "<h2 style='color:red'>❌ Some functions are missing!</h2>"
+  }
+</script>
+
+</body>
+</html>
+

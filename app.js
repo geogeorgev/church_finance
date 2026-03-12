@@ -1,15 +1,4 @@
-﻿console.log("app.js loaded")
-console.log("All functions defined:", {
-  dashboard: typeof dashboard,
-  loadMembers: typeof loadMembers,
-  loadBudget: typeof loadBudget,
-  loadIncome: typeof loadIncome,
-  loadExpense: typeof loadExpense,
-  loadReports: typeof loadReports,
-  exportCollectionsExcel: typeof exportCollectionsExcel,
-  showTaxReportOptions: typeof showTaxReportOptions
-})
-// ===== DASHBOARD =====
+﻿// ===== DASHBOARD =====
 async function dashboard(){
   try {
     if (!db) {
@@ -342,3 +331,17 @@ async function generateTaxReport(){
   showSuccess("Report generated!")
   dashboard()
 }
+
+// All functions loaded successfully
+console.log("✅ app.js loaded - All functions defined:")
+console.log({
+  dashboard: typeof dashboard,
+  loadMembers: typeof loadMembers,
+  loadBudget: typeof loadBudget,
+  loadIncome: typeof loadIncome,
+  loadExpense: typeof loadExpense,
+  loadReports: typeof loadReports,
+  exportCollectionsExcel: typeof exportCollectionsExcel,
+  showTaxReportOptions: typeof showTaxReportOptions,
+  generateTaxReport: typeof generateTaxReport
+})
