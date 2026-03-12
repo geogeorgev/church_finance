@@ -10,7 +10,20 @@ firebase.auth().signInWithEmailAndPassword(email,password)
 document.getElementById("loginBox").style.display="none"
 document.getElementById("app").style.display="block"
 
-dashboard()
+// Ensure dashboard function is available before calling
+if (typeof dashboard === 'function') {
+  dashboard()
+} else {
+  // If dashboard not available, wait and try again
+  setTimeout(() => {
+    if (typeof dashboard === 'function') {
+      dashboard()
+    } else {
+      console.error('Dashboard function not found after delay')
+      alert('Error loading dashboard. Please refresh the page.')
+    }
+  }, 500)
+}
 
 })
 

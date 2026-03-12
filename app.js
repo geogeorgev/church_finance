@@ -11,9 +11,15 @@ console.log("All functions defined:", {
 })
 // ===== DASHBOARD =====
 async function dashboard(){
-  const incomeSnap = await db.collection("income").get()
-  const expenseSnap = await db.collection("expense").get()
-  const budgetSnap = await db.collection("budget").get()
+  try {
+    if (!db) {
+      console.error('Firebase database not initialized')
+      return
+    }
+
+    const incomeSnap = await db.collection("income").get()
+    const expenseSnap = await db.collection("expense").get()
+    const budgetSnap = await db.collection("budget").get()
   let incomeTotal = 0, expenseTotal = 0, budgetTotal = 0
   let incomeByMonth = {}, expenseByCategory = {}
   incomeSnap.forEach(doc => {
@@ -45,6 +51,9 @@ async function dashboard(){
       })
     }
   }, 100)
+  } catch (error) {
+    console.error('Error loading dashboard:', error)
+  }
 }
 async function loadMembers(){
   let html = "<h2>👥 Members</h2><div class="form-container"><h3>Add New Member</h3><div class="form-row three"><div class="form-group"><label>Name *</label><input id="mname" placeholder="Full Name"></div><div class="form-group"><label>Phone *</label><input id="mphone" placeholder="Phone"></div><div class="form-group"><label>Email *</label><input id="memail" type="email" placeholder="Email"></div></div><div class="form-group"><label>Address 1 *</label><input id="madd1" placeholder="Street"></div><div class="form-group"><label>Address 2</label><input id="madd2"></div><button onclick="addMember()" class="success">✅ Add</button></div><h3>Members</h3><div class="search-box"><input id="memberSearch" placeholder="Search..." onkeyup="filterMembers()"></div>"
