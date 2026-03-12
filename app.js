@@ -1,4 +1,14 @@
 ﻿console.log("app.js loaded")
+console.log("All functions defined:", {
+  dashboard: typeof dashboard,
+  loadMembers: typeof loadMembers,
+  loadBudget: typeof loadBudget,
+  loadIncome: typeof loadIncome,
+  loadExpense: typeof loadExpense,
+  loadReports: typeof loadReports,
+  exportCollectionsExcel: typeof exportCollectionsExcel,
+  showTaxReportOptions: typeof showTaxReportOptions
+})
 // ===== DASHBOARD =====
 async function dashboard(){
   const incomeSnap = await db.collection("income").get()
