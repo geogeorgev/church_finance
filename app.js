@@ -1,8 +1,21 @@
 ﻿// ===== DASHBOARD =====
 async function dashboard(){
   try {
-    if (!db) {
-      console.error('Firebase database not initialized')
+    // Wait for Firebase to be initialized
+    if (typeof db === 'undefined' || !db) {
+      console.error('Firebase database not initialized, waiting...')
+      // Wait up to 3 seconds for Firebase to initialize
+      for (let i = 0; i < 30; i++) {
+        await new Promise(resolve => setTimeout(resolve, 100))
+        if (typeof db !== 'undefined' && db) {
+          console.log('Firebase initialized after waiting')
+          break
+        }
+      }
+    }
+
+    if (typeof db === 'undefined' || !db) {
+      console.error('Firebase database failed to initialize')
       return
     }
 

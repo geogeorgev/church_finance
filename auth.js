@@ -12,9 +12,17 @@ document.getElementById("app").style.display="block"
 
 // Ensure dashboard function is available before calling
 if (typeof dashboard === 'function') {
-  dashboard()
+  // Wait a moment for Firebase to fully initialize
+  setTimeout(() => {
+    if (typeof dashboard === 'function') {
+      dashboard()
+    } else {
+      console.error('Dashboard function lost after delay')
+      alert('Error loading dashboard. Please refresh the page.')
+    }
+  }, 1500)
 } else {
-  // If dashboard not available, wait and try again
+  // If dashboard not available immediately, wait longer and retry
   setTimeout(() => {
     if (typeof dashboard === 'function') {
       dashboard()
@@ -22,7 +30,7 @@ if (typeof dashboard === 'function') {
       console.error('Dashboard function not found after delay')
       alert('Error loading dashboard. Please refresh the page.')
     }
-  }, 500)
+  }, 2000)
 }
 
 })
