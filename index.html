@@ -13,46 +13,43 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-
-
 </head>
 
 <body>
 
-<h1>Church Finance Manager</h1>
+<h1>💒 Church Finance Manager</h1>
 
 <div id="loginBox">
-
     <h2>Church Finance Login</h2>
-
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-
-    <button onclick="login()">Login</button>
-
+    <div class="form-group">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="Enter your email">
+    </div>
+    <div class="form-group">
+        <label>Password</label>
+        <input id="password" type="password" placeholder="Enter your password">
+    </div>
+    <button onclick="login()" class="block">Login</button>
 </div>
 
 <div id="app" style="display:none;">
+    <div class="menu">
+        <button onclick="dashboard()">📊 Dashboard</button>
+        <button onclick="loadMembers()">👥 Members</button>
+        <button onclick="loadBudget()">📋 Budget</button>
+        <button onclick="loadIncome()">💰 Income</button>
+        <button onclick="loadExpense()">💸 Expense</button>
+        <button onclick="loadReports()">📈 Reports</button>
+        <button onclick="exportCollectionsExcel()">📥 Export</button>
+        <button onclick="showTaxReportOptions()">🎯 Tax Report</button>
+        <button onclick="logout()" style="margin-left: auto;" class="secondary">🚪 Logout</button>
+    </div>
 
-<div class="menu">
-
-    <button onclick="dashboard()">Dashboard</button>
-    <button onclick="loadMembers()">Members</button>
-    <button onclick="loadBudget()">Budget</button>
-    <button onclick="loadIncome()">Income</button>
-    <button onclick="loadExpense()">Expense</button>
-    <button onclick="loadReports()">Reports</button>
-    <button onclick="exportCollectionsExcel()">Export Collections to Excel</button>
-    <button onclick="generateTaxReport()">Generate Tax Report</button>
-
-
-
+    <div id="content"></div>
 </div>
 
-<div id="content"></div>
-</div>
 <script defer src="firebase.js"></script>
+<script defer src="utils.js"></script>
 <script defer src="app.js"></script>
 <script src="auth.js"></script>
 
